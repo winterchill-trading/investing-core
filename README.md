@@ -71,7 +71,7 @@ portfolio: value 250.00 USD, cost 250.13 USD, unrealised -0.13 USD, average cost
 | `Market_data` | `S` (a source of closes), `Simulated` (deterministic random walk), `Fixed` (serves given closes) |
 | `Order_request`, `Order_limits`, `Placement` | Buy by amount or quantity, sell by quantity, amount or all; minimum and maximum order value; sizing and typed refusals |
 | `Order` | The order state machine with submission tracking |
-| `Position`, `Portfolio` | Holdings with reservations, average cost basis, realised and unrealised results; a valued summary in one currency |
+| `Position`, `Portfolio` | Holdings with reservations, average cost basis (per-share average at eight or four decimals, rounding chosen by the caller), realised and unrealised results; a valued summary in one currency |
 | `Booking` | Ledger entries for holds, settlement, release and proceeds |
 | `Broker`, `Sim_broker` | The brokerage port (`Broker.S`) and an in-memory simulated broker |
 | `Recurring_buy` | Due dates, deterministic order ids and failure pausing for scheduled buys |

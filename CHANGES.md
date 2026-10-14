@@ -4,7 +4,16 @@ All notable changes to this library. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versions follow semantic
 versioning once released.
 
-## Unreleased
+## 0.1.1
+
+### Added
+
+- `Position.Cost_precision` (`eight`, the default, `four`, or `of_decimals` from 0 to 8)
+  and `?precision` and `?rounding` on `Position.average_cost`. The exact quotient is
+  rounded once at the chosen precision (default half-even); the defaults give the same
+  results as 0.1.0.
+
+## 0.1.0
 
 ### Added
 

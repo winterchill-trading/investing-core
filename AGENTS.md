@@ -18,7 +18,7 @@ the values in its own store and reaches a broker or data vendor through the modu
 | `.github/` | `workflows/ci.yml` |
 
 `README.md` holds the model table, the rules (rounding, sizing, prices, order life, cost basis),
-the ledger entries and the portability notes. `CHANGES.md` keeps the `Unreleased` notes.
+the ledger entries and the portability notes. `CHANGES.md` keeps the notes per version.
 
 ## Build, test, docs
 
@@ -49,7 +49,7 @@ The library needs the OxCaml compiler.
   `Stable.V2`, and `V1` stays readable.
 - Quickcheck properties check the money invariants (cost basis conservation, rounding direction,
   whole fills). A new rule gets a property, not only an example.
-- odoc on every public value. User-visible changes get a line under `Unreleased` in `CHANGES.md`.
+- odoc on every public value. User-visible changes get a line under the next version in `CHANGES.md`.
 
 ## Dependencies and dependents
 
@@ -68,6 +68,11 @@ in `investing-core.opam` and `lib/dune`. To check a run, use `gh run list --limi
 one `gh run watch <id> --exit-status`. Do not poll in a loop.
 
 ## Pitfalls
+
+- Changes after 0.1.0 are additive (optional arguments on functions with a positional
+  argument, new functions, new modules). Rounding to fewer decimals goes straight from
+  the exact rational: rounding an already-rounded eight-decimal value again can differ
+  from rounding once (double rounding), so `Position.average_cost ~precision` never does.
 
 - `Identifiable.Make` needs `bin_io` in the type. For a validated string id, put `Binable` with
   the validator inside `T` itself, then `module Stable = struct module V1 = T end`. After the
