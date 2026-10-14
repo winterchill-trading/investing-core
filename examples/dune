@@ -1,0 +1,17 @@
+; Built and run in CI so the README example keeps compiling and its output stays true.
+; Not installed.
+
+(executable
+ (name quickstart)
+ (libraries core async_kernel money ledger investing-core)
+ (preprocess
+  (pps ppx_jane)))
+
+(rule
+ (alias runtest)
+ (action
+  (progn
+   (with-stdout-to
+    quickstart.output
+    (run %{exe:quickstart.exe}))
+   (diff quickstart.expected quickstart.output))))

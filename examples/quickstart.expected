@@ -1,0 +1,5 @@
+plan: buy 6.024096 ACME at 41.5, hold 250.00 USD
+after hold: available 750.00 USD, held 250.00 USD
+fill: 6.024096 at 41.52075, cost 250.13 USD
+after fill: available 749.87 USD, held 0.00 USD, owed to broker 250.13 USD
+portfolio: value 250.00 USD, cost 250.13 USD, unrealised -0.13 USD, average cost 41.52158266
