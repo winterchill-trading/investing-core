@@ -3,8 +3,8 @@
 open! Core
 
 (** Where a close came from. When two closes exist for the same symbol and date, the one
-    with the higher {!rank} wins: a close from a market-data feed replaces seed data
-    bundled with the application, which replaces a simulated close. *)
+    with the higher {!Origin.rank} wins: a close from a market-data feed replaces seed
+    data bundled with the application, which replaces a simulated close. *)
 module Origin : sig
   type t =
     | Feed (** fetched from a market-data source *)

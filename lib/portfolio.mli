@@ -32,6 +32,7 @@ type t =
   }
 [@@deriving sexp_of]
 
+(** Values [positions] in [currency] at the latest usable closes on [today]. *)
 val summarize
   :  ?staleness:Staleness.t
   -> Money.Currency.t

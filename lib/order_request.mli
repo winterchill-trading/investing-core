@@ -19,6 +19,7 @@ type t =
   | Sell_all
 [@@deriving sexp, compare, equal]
 
+(** [Buy] for the two buy sizings, [Sell] otherwise. *)
 val side : t -> Side.t
 
 (** ["amount"], ["quantity"] or ["all"]: how the order is sized. *)

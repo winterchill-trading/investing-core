@@ -16,6 +16,7 @@ val create : minimum:Money.Amount.t -> maximum:Money.Amount.t -> t Or_error.t
 (** 1 to 1,000,000 major units of [currency]. *)
 val default : Money.Currency.t -> t
 
+(** The currency of both limits. *)
 val currency : t -> Money.Currency.t
 
 module Stable : sig

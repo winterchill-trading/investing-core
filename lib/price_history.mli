@@ -8,6 +8,7 @@ open! Core
 
 type t [@@deriving sexp_of]
 
+(** No closes. *)
 val empty : t
 
 (** Adds or replaces (by preference) the close for its symbol and date. *)
@@ -16,6 +17,7 @@ val add : t -> Close.t -> t
 (** [List.fold ~init:t ~f:add]. *)
 val add_all : t -> Close.t list -> t
 
+(** [add_all empty]. *)
 val of_list : Close.t list -> t
 
 (** Symbols with at least one close, sorted. *)
@@ -53,6 +55,7 @@ module Quote : sig
     }
   [@@deriving sexp_of]
 
+  (** The close's price. *)
   val price : t -> Price.t
 
   (** [close - previous] as an exact rational in the instrument's currency per share. *)
@@ -73,6 +76,7 @@ module Unavailable : sig
   [@@deriving sexp, compare, equal]
 end
 
+(** The quote for [symbol] on [today]; see {!Quote} and {!Unavailable}. *)
 val quote
   :  ?staleness:Staleness.t (** default {!Staleness.default} *)
   -> t

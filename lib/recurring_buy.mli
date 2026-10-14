@@ -90,6 +90,7 @@ val succeeded : t -> t
 (** A run that could not place its order; [reason] is kept when this pauses the plan. *)
 val failed : t -> reason:string -> t
 
+(** Stops the plan until {!resume}; [reason] is kept in the status. *)
 val pause : t -> reason:string -> t
 
 (** Runs again from [today]: dates that passed while paused are never run, a date equal to

@@ -49,7 +49,9 @@ module Event : sig
         }
   [@@deriving sexp, compare, equal]
 
+  (** The broker's id for this event, unique per broker: the deduplication key. *)
   val event_id : t -> string
+  (** The order the event is about. *)
   val order_id : t -> Order_id.t
 
   (** The {!Order.Event.t} to apply. Fails when a fill's quantity is not the order's
@@ -73,8 +75,11 @@ module type S = sig
   (** Name to show customers. *)
   val display_name : t -> string
 
+  (** Sends an order; idempotent per [idempotency_key]. *)
   val place : t -> Request.t -> Ack.t Deferred.Or_error.t
+  (** Asks the broker to cancel an acknowledged order. *)
   val cancel : t -> broker_ref:string -> Cancel_result.t Deferred.Or_error.t
+  (** The acknowledgement of an earlier [place] with this key, if the broker has one. *)
   val find : t -> idempotency_key:string -> Ack.t option Deferred.Or_error.t
 
   (** Fills and rejections, in the order they happen. One reader per broker value. *)

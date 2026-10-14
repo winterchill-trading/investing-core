@@ -55,6 +55,7 @@ module Status : sig
   (** ["pending"], ["filled"], ["rejected"], ["cancelled"]. *)
   val name : t -> string
 
+  (** [true] for filled, rejected and cancelled. *)
   val is_final : t -> bool
 end
 
@@ -91,6 +92,7 @@ val create
   -> at:Time_ns.t
   -> t
 
+(** Buy or sell, from the request. *)
 val side : t -> Side.t
 
 (** The instrument currency every amount of the order is in. *)

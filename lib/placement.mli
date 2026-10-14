@@ -56,6 +56,7 @@ module Plan : sig
   [@@deriving sexp_of]
 end
 
+(** The plan for [request], or the first rule it breaks. *)
 val plan
   :  ?staleness:Staleness.t
   -> ?limits:Order_limits.t

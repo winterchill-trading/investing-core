@@ -39,6 +39,7 @@ val create
 
 include Broker.S with type t := t
 
+(** The configuration new orders get. *)
 val config : t -> Config.t
 
 (** Applies to orders placed afterwards; orders already waiting keep the delay, spread and
@@ -51,6 +52,7 @@ val emit_due : t -> unit
 (** Decides one open order now. Fails for an unknown reference or an order no longer open. *)
 val fill_now : t -> broker_ref:string -> unit Or_error.t
 
+(** Rejects one open order now with [reason]. Fails like {!fill_now}. *)
 val reject_now : t -> broker_ref:string -> reason:string -> unit Or_error.t
 
 (** Calls {!emit_due} every [every] (default one second) on the time source until [stop]

@@ -5,6 +5,7 @@ open! Core
 
 type t [@@deriving sexp_of]
 
+(** No instruments. *)
 val empty : t
 
 (** Fails when the symbol is already present. *)
@@ -16,6 +17,7 @@ val of_list : Instrument.t list -> t Or_error.t
 (** Replaces the instrument with the same symbol, or adds it. *)
 val set : t -> Instrument.t -> t
 
+(** The instrument listed under [symbol]. *)
 val find : t -> Symbol.t -> Instrument.t option
 
 (** [find], with an error naming the symbol when it is missing. *)
@@ -27,4 +29,5 @@ val search : ?query:string -> ?kind:Instrument.Kind.t -> t -> Instrument.t list
 (** Every instrument, sorted by symbol. *)
 val to_list : t -> Instrument.t list
 
+(** The number of instruments. *)
 val length : t -> int

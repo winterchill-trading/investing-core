@@ -25,11 +25,13 @@ type t = private
 (** No shares, in [currency]. *)
 val empty : Symbol.t -> Money.Currency.t -> t
 
+(** The instrument currency of the cost basis and results. *)
 val currency : t -> Money.Currency.t
 
 (** [quantity - reserved]. *)
 val available : t -> Quantity.t
 
+(** No shares held. *)
 val is_flat : t -> bool
 
 (** Promises [q] shares to a pending sell. Fails when fewer than [q] are available. *)
@@ -77,6 +79,7 @@ module Valuation : sig
   [@@deriving sexp_of]
 end
 
+(** The position valued at [price]. *)
 val value_at : t -> Price.t -> Valuation.t
 
 module Stable : sig

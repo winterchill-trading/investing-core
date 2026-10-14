@@ -25,7 +25,9 @@ val zero : t
 (** One whole share. *)
 val one : t
 
+(** No shares. *)
 val is_zero : t -> bool
+(** At least a millionth of a share. *)
 val is_positive : t -> bool
 
 (** [of_micro n] is [n] millionths of a share. Fails when [n] is negative. *)
