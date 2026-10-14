@@ -159,14 +159,37 @@ let sell ?(from_reserved = true) t ~quantity ~proceeds =
     , { Sale.cost_removed; realised } )
 ;;
 
-let average_cost t =
+module Cost_precision = struct
+  type t = int [@@deriving sexp, compare, equal]
+
+  let eight = 8
+  let four = 4
+  let default = eight
+
+  let of_decimals n =
+    if n >= 0 && n <= 8
+    then Ok n
+    else Or_error.error_s [%message "cost precision must be 0 to 8 decimals" (n : int)]
+  ;;
+
+  let decimals t = t
+end
+
+let average_cost
+  ?(precision = Cost_precision.default)
+  ?(rounding = Money.Rounding.Half_even)
+  t
+  =
   if Quantity.is_zero t.quantity
   then None
-  else
-    Price.of_q
-      ~rounding:Half_even
-      (Q.div (Amount.to_q t.cost_basis) (Quantity.to_q t.quantity))
-    |> Result.ok
+  else (
+    let exact = Q.div (Amount.to_q t.cost_basis) (Quantity.to_q t.quantity) in
+    (* Round once at [precision] decimals, then scale up to the price's 10^-8 units, so
+       four decimals is never eight decimals rounded a second time. *)
+    let scale = Z.pow (Z.of_int 10) precision in
+    let rounded = Money.Rounding.div rounding (Z.mul (Q.num exact) scale) (Q.den exact) in
+    let units = Z.mul rounded (Z.pow (Z.of_int 10) (8 - precision)) in
+    if Z.fits_int units then Price.of_units (Z.to_int units) |> Result.ok else None)
 ;;
 
 module Valuation = struct

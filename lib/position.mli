@@ -66,8 +66,41 @@ val sell
   -> proceeds:Money.Amount.t
   -> (t * Sale.t) Or_error.t
 
-(** [cost_basis / quantity], rounded half-even to eight places; [None] when flat. *)
-val average_cost : t -> Price.t option
+(** How many decimal places {!average_cost} keeps. *)
+module Cost_precision : sig
+  (** Sexp is the number of decimals, e.g. [8]. *)
+  type t [@@deriving sexp, compare, equal]
+
+  (** Eight decimals, the finest a {!Price.t} holds; the default. *)
+  val eight : t
+
+  (** Four decimals, as many statements and tax forms print a per-share cost. *)
+  val four : t
+
+  (** {!eight}. *)
+  val default : t
+
+  (** [0] to [8] decimals; fails otherwise. *)
+  val of_decimals : int -> t Or_error.t
+
+  (** The number of decimals. *)
+  val decimals : t -> int
+end
+
+(** The average cost per share, [cost_basis / quantity], or [None] when flat.
+
+    Rounding rules: the exact quotient (an unrounded rational) is rounded once, to
+    [precision] decimals (default {!Cost_precision.default}, eight) with [rounding]
+    (default [Half_even]). It is never rounded through an intermediate precision, so four
+    decimals is not eight decimals rounded again. The cost basis itself is an amount in
+    minor units and is not touched; only this per-share figure is rounded. A result that
+    rounds to zero (a zero cost basis, or a tiny one at four decimals) is [None], since a
+    {!Price.t} is positive. *)
+val average_cost
+  :  ?precision:Cost_precision.t
+  -> ?rounding:Money.Rounding.t
+  -> t
+  -> Price.t option
 
 (** A position valued at a price. *)
 module Valuation : sig
