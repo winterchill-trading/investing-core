@@ -42,7 +42,8 @@ include Broker.S with type t := t
 
 val config : t -> Config.t
 
-(** Applies to orders placed afterwards; orders already waiting keep their due time. *)
+(** Applies to orders placed afterwards; orders already waiting keep the delay, spread
+    and outcome they were placed with. *)
 val set_config : t -> Config.t -> unit
 
 (** Decides every open order whose due time has passed, oldest first. *)

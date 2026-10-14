@@ -25,6 +25,7 @@ type order =
   { broker_ref : string
   ; request : Broker.Request.t
   ; placed_seq : int
+  ; config : Config.t (** as it was when the order was placed *)
   ; mutable state : Order_state.t
   }
 
@@ -83,7 +84,13 @@ let place t (request : Broker.Request.t) =
       Hashtbl.set
         t.by_ref
         ~key:broker_ref
-        ~data:{ broker_ref; request; placed_seq = t.next_seq; state = Open { due_at } };
+        ~data:
+          { broker_ref
+          ; request
+          ; placed_seq = t.next_seq
+          ; config = t.config
+          ; state = Open { due_at }
+          };
       t.next_seq <- t.next_seq + 1;
       broker_ref
   in
@@ -123,8 +130,8 @@ let fill t (o : order) =
   | Some close ->
     let bps =
       match o.request.side with
-      | Buy -> t.config.spread_bps
-      | Sell -> -t.config.spread_bps
+      | Buy -> o.config.spread_bps
+      | Sell -> -o.config.spread_bps
     in
     let rounding : Money.Rounding.t =
       match o.request.side with
@@ -148,8 +155,8 @@ let fill t (o : order) =
             }))
 ;;
 
-let decide t o =
-  match t.config.outcome with
+let decide t (o : order) =
+  match o.config.outcome with
   | `Fill -> fill t o
   | `Reject -> reject t o ~reason:"rejected_by_broker"
 ;;
