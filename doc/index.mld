@@ -1,0 +1,26 @@
+{0 investing-core}
+
+Retail brokerage as pure values: instruments, end-of-day prices, fractional market
+orders, positions with average cost basis, and the ledger entries for the cash side of
+each order. Nothing here persists or opens a connection; a service stores the values and
+reaches a broker or a data vendor through {!Investing_core.Broker.S} and
+{!Investing_core.Market_data.S}.
+
+{1 Where to start}
+
+- {!Investing_core.Placement}: check an order request against the instrument, the latest
+  price and the position, and size it.
+- {!Investing_core.Order}: the order state machine.
+- {!Investing_core.Booking}: the ledger entries for holds, fills and releases.
+- {!Investing_core.Position} and {!Investing_core.Portfolio}: holdings, cost basis and
+  results.
+- {!Investing_core.Price_history} and {!Investing_core.Staleness}: reference prices and
+  how old they may be.
+- {!Investing_core.Sim_broker} and {!Investing_core.Market_data.Simulated}: everything
+  runnable without a broker or a data vendor.
+- {!Investing_core.Recurring_buy}: the hook for scheduled buys.
+
+{1 Example}
+
+[examples/quickstart.ml] in the repository takes one buy from simulated closes to a
+portfolio summary; [dune test] checks its output.
