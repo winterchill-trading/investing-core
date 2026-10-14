@@ -5,7 +5,10 @@ open Helpers
 let show request ?position ?instrument () =
   match plan ?position ?instrument request with
   | Error r ->
-    printf "refused %s: %s\n" (Placement.Refusal.code r) (Sexp.to_string [%sexp (r : Placement.Refusal.t)])
+    printf
+      "refused %s: %s\n"
+      (Placement.Refusal.code r)
+      (Sexp.to_string [%sexp (r : Placement.Refusal.t)])
   | Ok (p : Placement.Plan.t) ->
     printf
       "%s %s at %s, gross %s, hold %s, reserve %s\n"
@@ -83,7 +86,11 @@ let%expect_test "stale and old prices" =
         ~position:None
         (Buy_amount (usd "10.00"))
     with
-    | Ok p -> printf "%s: ok, %s\n" today (Sexp.to_string [%sexp (p.quote.verdict : Staleness.Verdict.t)])
+    | Ok p ->
+      printf
+        "%s: ok, %s\n"
+        today
+        (Sexp.to_string [%sexp (p.quote.verdict : Staleness.Verdict.t)])
     | Error r -> printf "%s: %s\n" today (Placement.Refusal.code r)
   in
   List.iter [ "2026-10-12"; "2026-10-18" ] ~f:check;

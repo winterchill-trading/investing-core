@@ -18,7 +18,9 @@ let show_apply o e =
 let%expect_test "submission and cancel rules" =
   let o = order (Buy_amount (usd "10.00")) in
   let o = show_apply o (Acknowledged { broker_ref = "b-1"; at = t0 }) in
-  let o = show_apply o (Filled { price = Price.of_string "1"; price_date = None; at = t0 }) in
+  let o =
+    show_apply o (Filled { price = Price.of_string "1"; price_date = None; at = t0 })
+  in
   let o = show_apply o (Sent { at = t0 }) in
   print_s [%sexp (Order.cancellable o : (unit, Order.Refusal.t) Result.t)];
   let o = show_apply o (Cancelled { at = t0 }) in
@@ -58,7 +60,9 @@ let gen_event =
     ]
 ;;
 
-let%expect_test "random event streams: final is final, fills are whole, cancels never in transit" =
+let%expect_test "random event streams: final is final, fills are whole, cancels never in \
+                 transit"
+  =
   let seen = String.Hash_set.create () in
   Quickcheck.test
     (List.gen_with_length 8 gen_event)
@@ -79,9 +83,13 @@ let%expect_test "random event streams: final is final, fills are whole, cancels 
                 (* buy costs round up: 1.5 x 42 = 63.00 exactly *)
                 assert (Money.Amount.equal f.gross (usd "63.00"))
               | _ -> ());
-             assert (Bool.equal (Order.Status.is_final o'.status) (Option.is_some (Order.closed_at o')));
+             assert (
+               Bool.equal
+                 (Order.Status.is_final o'.status)
+                 (Option.is_some (Order.closed_at o')));
              o')
          : Order.t));
-  print_s [%sexp (Hash_set.to_list seen |> List.sort ~compare:String.compare : string list)];
+  print_s
+    [%sexp (Hash_set.to_list seen |> List.sort ~compare:String.compare : string list)];
   [%expect {| (cancelled filled pending rejected) |}]
 ;;

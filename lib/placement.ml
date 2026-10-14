@@ -68,12 +68,15 @@ let plan
   in
   let check_amount a =
     if not (Money.Currency.equal (Amount.currency a) currency)
-    then Error (Refusal.Currency_mismatch { expected = currency; got = Amount.currency a })
+    then
+      Error (Refusal.Currency_mismatch { expected = currency; got = Amount.currency a })
     else if not (Amount.is_positive a)
     then Error Refusal.Not_positive
     else Ok ()
   in
-  let check_quantity q = if Quantity.is_positive q then Ok () else Error Refusal.Not_positive in
+  let check_quantity q =
+    if Quantity.is_positive q then Ok () else Error Refusal.Not_positive
+  in
   let%bind () =
     match request with
     | Buy_amount a | Sell_amount a -> check_amount a
@@ -91,7 +94,9 @@ let plan
     | Ok _ | Error _ -> Error Refusal.Too_small_for_one_unit
   in
   let gross q ~rounding = Price.gross price q ~currency ~rounding in
-  let available = Option.value_map position ~default:Quantity.zero ~f:Position.available in
+  let available =
+    Option.value_map position ~default:Quantity.zero ~f:Position.available
+  in
   let holding_refusal () =
     match position with
     | Some p when Quantity.is_positive p.quantity -> Refusal.Holdings_reserved { symbol }
@@ -126,7 +131,9 @@ let plan
     let%bind () = can_sell quantity in
     let estimated_gross = gross quantity ~rounding:Down in
     let%map () =
-      check_limits estimated_gross ~exempt_from_minimum:(Quantity.equal quantity available)
+      check_limits
+        estimated_gross
+        ~exempt_from_minimum:(Quantity.equal quantity available)
     in
     { Plan.side = Sell
     ; quantity
@@ -149,5 +156,7 @@ let plan
     let%bind quantity = shares_for a in
     sell ~quantity
   | Sell_all ->
-    if Quantity.is_zero available then Error (holding_refusal ()) else sell ~quantity:available
+    if Quantity.is_zero available
+    then Error (holding_refusal ())
+    else sell ~quantity:available
 ;;

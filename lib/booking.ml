@@ -28,7 +28,8 @@ end
 let hold_id id = Ledger.Hold_id.of_string_or_error ("order:" ^ Order_id.to_string id)
 
 let idempotency_key id ~leg =
-  Ledger.Idempotency_key.of_string_or_error (sprintf "order:%s:%s" (Order_id.to_string id) leg)
+  Ledger.Idempotency_key.of_string_or_error
+    (sprintf "order:%s:%s" (Order_id.to_string id) leg)
 ;;
 
 let apply balances entries =
@@ -40,7 +41,7 @@ let apply balances entries =
    the journal would refuse for a reason visible now. *)
 let checked balances entries =
   let open Or_error.Let_syntax in
-  let%bind entries = entries in
+  let%bind entries in
   let%map (_ : Ledger.Balances.t) = apply balances entries in
   entries
 ;;
@@ -52,8 +53,10 @@ let buy_placed balances (order : Order.t) ~at =
   checked balances
   @@
   match Order.side order, order.estimate.hold with
-  | Sell, _ -> Or_error.error_s [%message "a sell places no hold" ~order:(order.id : Order_id.t)]
-  | Buy, None -> Or_error.error_s [%message "buy without a hold" ~order:(order.id : Order_id.t)]
+  | Sell, _ ->
+    Or_error.error_s [%message "a sell places no hold" ~order:(order.id : Order_id.t)]
+  | Buy, None ->
+    Or_error.error_s [%message "buy without a hold" ~order:(order.id : Order_id.t)]
   | Buy, Some amount ->
     let%bind hold_id = hold_id order.id in
     let%bind idempotency_key = idempotency_key order.id ~leg:"hold" in
@@ -76,7 +79,12 @@ let buy_filled (chart : Chart.t) balances (order : Order.t) (fill : Order.Fill.t
   let open Or_error.Let_syntax in
   let%bind hold_id = hold_id order.id in
   let%bind idempotency_key = idempotency_key order.id ~leg:"settlement" in
-  let%bind hold = Option.value_map order.estimate.hold ~default:(Or_error.error_string "buy without a hold") ~f:Or_error.return in
+  let%bind hold =
+    Option.value_map
+      order.estimate.hold
+      ~default:(Or_error.error_string "buy without a hold")
+      ~f:Or_error.return
+  in
   let to_ = chart.brokerage_settlement (Order.currency order) in
   let%map entry =
     if Amount.( <= ) fill.gross hold
@@ -138,7 +146,9 @@ let sell_filled (chart : Chart.t) (order : Order.t) (fill : Order.Fill.t) ~at =
         ~reference:(reference order)
         ~effective_at:fill.at
         ~recorded_at:at
-        [ Ledger.Posting.debit (chart.brokerage_settlement (Order.currency order)) fill.gross
+        [ Ledger.Posting.debit
+            (chart.brokerage_settlement (Order.currency order))
+            fill.gross
         ; Ledger.Posting.credit order.account fill.gross
         ]
     in

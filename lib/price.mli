@@ -45,18 +45,21 @@ val gross
   -> rounding:Money.Rounding.t
   -> Money.Amount.t
 
-(** [quantity_for t amount ~rounding] is the number of shares [amount] buys at [t], rounded
-    to six places with [rounding] ([Down] when cash is turned into shares). Fails on a
-    negative amount. *)
-val quantity_for : t -> Money.Amount.t -> rounding:Money.Rounding.t -> Quantity.t Or_error.t
+(** [quantity_for t amount ~rounding] is the number of shares [amount] buys at [t],
+    rounded to six places with [rounding] ([Down] when cash is turned into shares). Fails
+    on a negative amount. *)
+val quantity_for
+  :  t
+  -> Money.Amount.t
+  -> rounding:Money.Rounding.t
+  -> Quantity.t Or_error.t
 
 (** [adjust_bps t ~bps ~rounding] is [t * (1 + bps / 10_000)]: a price moved by a spread,
     up for a positive [bps] and down for a negative one. Fails when the result is not
     positive. *)
 val adjust_bps : t -> bps:int -> rounding:Money.Rounding.t -> t Or_error.t
 
-(** [change ~from ~to_] is [(to_ - from) / from], the relative move as an exact
-    rational. *)
+(** [change ~from ~to_] is [(to_ - from) / from], the relative move as an exact rational. *)
 val change : from:t -> to_:t -> Q.t
 
 module Stable : sig

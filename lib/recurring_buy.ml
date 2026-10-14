@@ -60,11 +60,14 @@ let create ~id ~account ~symbol ~amount ~cadence ~start ?(max_failures = 3) () =
   let%bind () =
     if Money.Amount.is_positive amount
     then Ok ()
-    else Or_error.error_s [%message "amount must be positive" ~amount:(Money.Amount.to_string amount)]
+    else
+      Or_error.error_s
+        [%message "amount must be positive" ~amount:(Money.Amount.to_string amount)]
   in
   let%bind () =
     match (cadence : Cadence.t) with
-    | Every_n_days n when n < 1 -> Or_error.error_s [%message "interval must be at least a day" (n : int)]
+    | Every_n_days n when n < 1 ->
+      Or_error.error_s [%message "interval must be at least a day" (n : int)]
     | Weekly | Monthly | Every_n_days _ -> Ok ()
   in
   let%map () =
@@ -92,8 +95,8 @@ let nth t n =
   | Monthly -> Date.add_months t.start n
 ;;
 
-(* Index of the last date on or before [d], or -1. Monthly dates are not evenly spaced,
-   so estimate from the month difference and step to the exact index. *)
+(* Index of the last date on or before [d], or -1. Monthly dates are not evenly spaced, so
+   estimate from the month difference and step to the exact index. *)
 let index_on_or_before t d =
   if Date.( < ) d t.start
   then -1
@@ -149,6 +152,7 @@ let failed t ~reason =
 ;;
 
 let pause t ~reason = { t with status = Paused { reason } }
+
 let resume t ~today =
   { t with status = Active; consecutive_failures = 0; resumed_on = Some today }
 ;;

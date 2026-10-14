@@ -1,11 +1,11 @@
 (** A customer's holding of one instrument, with its average cost basis.
 
-    - [quantity] is every share held; [reserved] is the part promised to pending sells,
-      so [available = quantity - reserved] is what a new sell may use.
-    - [cost_basis] is what the shares held cost in total (in the instrument's currency).
-      A buy adds its cost; a sell removes the sold fraction of it, so the average cost
-      per share does not change on a sale. Selling everything removes all of it, so no
-      minor unit is ever left behind on an empty position.
+    - [quantity] is every share held; [reserved] is the part promised to pending sells, so
+      [available = quantity - reserved] is what a new sell may use.
+    - [cost_basis] is what the shares held cost in total (in the instrument's currency). A
+      buy adds its cost; a sell removes the sold fraction of it, so the average cost per
+      share does not change on a sale. Selling everything removes all of it, so no minor
+      unit is ever left behind on an empty position.
     - [realised] accumulates proceeds minus the cost removed, over the position's life.
 
     Values are immutable; every change returns a new position or an error, and none of
@@ -53,10 +53,10 @@ module Sale : sig
 end
 
 (** Removes [quantity] shares sold for [proceeds]. With [~from_reserved:true] (the
-    default) the shares come out of the reservation the sell made when it was placed.
-    The cost removed is [cost_basis * quantity / held], rounded half-even, or the whole
-    basis when every share is sold. Fails on another currency, negative proceeds, or more
-    shares than held (or reserved). *)
+    default) the shares come out of the reservation the sell made when it was placed. The
+    cost removed is [cost_basis * quantity / held], rounded half-even, or the whole basis
+    when every share is sold. Fails on another currency, negative proceeds, or more shares
+    than held (or reserved). *)
 val sell
   :  ?from_reserved:bool
   -> t

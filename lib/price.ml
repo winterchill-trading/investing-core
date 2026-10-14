@@ -64,7 +64,10 @@ let quickcheck_generator =
 ;;
 
 let quickcheck_observer = Int.quickcheck_observer
-let quickcheck_shrinker = Quickcheck.Shrinker.filter Int.quickcheck_shrinker ~f:(fun n -> n > 0)
+
+let quickcheck_shrinker =
+  Quickcheck.Shrinker.filter Int.quickcheck_shrinker ~f:(fun n -> n > 0)
+;;
 
 include Comparable.Make (struct
     include T

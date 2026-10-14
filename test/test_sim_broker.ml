@@ -11,7 +11,11 @@ let drain broker =
     Queue.iter q ~f:(fun e ->
       match (e : Broker.Event.t) with
       | Filled { event_id; order_id; price; _ } ->
-        printf "filled %s %s at %s\n" event_id (Order_id.to_string order_id) (Price.to_string price)
+        printf
+          "filled %s %s at %s\n"
+          event_id
+          (Order_id.to_string order_id)
+          (Price.to_string price)
       | Rejected { event_id; order_id; reason; _ } ->
         printf "rejected %s %s: %s\n" event_id (Order_id.to_string order_id) reason)
   | `Nothing_available -> print_endline "no events"
@@ -41,18 +45,23 @@ let%expect_test "placing is idempotent; cancel, manual decisions and missing pri
   let a' = get (Sim_broker.place broker (request "a")) in
   print_s [%sexp (Broker.Ack.equal a a' : bool)];
   print_s
-    [%sexp (get (Sim_broker.find broker ~idempotency_key:"order:a") : Broker.Ack.t option)];
+    [%sexp
+      (get (Sim_broker.find broker ~idempotency_key:"order:a") : Broker.Ack.t option)];
   let b = get (Sim_broker.place broker (request "b")) in
   let c = get (Sim_broker.place broker (request ~symbol:"NOPX" "c")) in
   (* no delay: nothing happens until a manual decision *)
   Time_source.advance_directly time_source ~to_:(at_sec 3600);
   Sim_broker.emit_due broker;
   drain broker;
-  print_s [%sexp (get (Sim_broker.cancel broker ~broker_ref:b.broker_ref) : Broker.Cancel_result.t)];
+  print_s
+    [%sexp
+      (get (Sim_broker.cancel broker ~broker_ref:b.broker_ref) : Broker.Cancel_result.t)];
   Sim_broker.fill_now broker ~broker_ref:a.broker_ref |> Or_error.ok_exn;
   Sim_broker.fill_now broker ~broker_ref:c.broker_ref |> Or_error.ok_exn;
   drain broker;
-  print_s [%sexp (get (Sim_broker.cancel broker ~broker_ref:a.broker_ref) : Broker.Cancel_result.t)];
+  print_s
+    [%sexp
+      (get (Sim_broker.cancel broker ~broker_ref:a.broker_ref) : Broker.Cancel_result.t)];
   print_s [%sexp (Sim_broker.fill_now broker ~broker_ref:b.broker_ref : unit Or_error.t)];
   print_s
     [%sexp
@@ -92,7 +101,8 @@ let%expect_test "due orders are decided in placement order once their delay pass
   Time_source.advance_directly time_source ~to_:(at_sec 6);
   Sim_broker.emit_due broker;
   drain broker;
-  [%expect {|
+  [%expect
+    {|
     filled sim-c2e9c3787957817ccde9:2 y at 41.5
     rejected sim-a6dbda003854c2c4faf4:3 z: rejected_by_broker
     |}]

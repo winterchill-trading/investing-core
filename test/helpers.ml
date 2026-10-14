@@ -24,7 +24,11 @@ let instrument ?(symbol = "ACME") ?(status = Listing.Status.Active) () =
 
 let prices =
   Price_history.of_list
-    [ { symbol = sym "ACME"; date = date "2026-10-06"; close = Price.of_string "40"; origin = Feed }
+    [ { symbol = sym "ACME"
+      ; date = date "2026-10-06"
+      ; close = Price.of_string "40"
+      ; origin = Feed
+      }
     ; { symbol = sym "ACME"; date = today; close = Price.of_string "41.5"; origin = Feed }
     ]
 ;;
@@ -39,7 +43,9 @@ let ledger ?(deposit = usd "1000.00") () =
   in
   let b =
     List.fold accounts ~init:Ledger.Balances.empty ~f:(fun b a ->
-      Ledger.Balances.apply b { seq = Ledger.Balances.next_seq b; event = Account_opened a }
+      Ledger.Balances.apply
+        b
+        { seq = Ledger.Balances.next_seq b; event = Account_opened a }
       |> Or_error.ok_exn)
   in
   let entry =

@@ -18,7 +18,8 @@ let of_string_or_error s =
   then Or_error.error_s [%message "symbol must start with a letter or digit" ~symbol:s]
   else (
     match String.find s ~f:(Fn.non valid_char) with
-    | Some c -> Or_error.error_s [%message "invalid character in symbol" ~symbol:s (c : char)]
+    | Some c ->
+      Or_error.error_s [%message "invalid character in symbol" ~symbol:s (c : char)]
     | None -> Ok s)
 ;;
 

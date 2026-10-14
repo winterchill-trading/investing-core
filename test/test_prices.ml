@@ -75,13 +75,13 @@ let%expect_test "quotes: fresh, stale, too old, missing" =
 let%expect_test "windows and the low/high range" =
   let w = Price_history.window history (sym "VT") ~until:(date "2026-10-06") ~days:5 in
   print_s
-    [%sexp (Or_error.map w ~f:(List.map ~f:(fun c -> c.Close.date)) : Date.t list Or_error.t)];
+    [%sexp
+      (Or_error.map w ~f:(List.map ~f:(fun c -> c.Close.date)) : Date.t list Or_error.t)];
   print_s
     [%sexp
       (Price_history.low_high history (sym "VT") ~until:(date "2026-10-07") ~days:365
        : (Price.t * Price.t) option)];
-  [%expect
-    {|
+  [%expect {|
     (Ok (2026-10-02 2026-10-05 2026-10-06))
     ((118.5 122))
     |}]

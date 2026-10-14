@@ -14,7 +14,11 @@ let%expect_test "summary in one currency, naming unpriced and foreign holdings" 
   let flat =
     let p = position "OLD" Money.Currency.usd "1" "10.00 USD" in
     let p, _ =
-      Position.sell ~from_reserved:false p ~quantity:(Quantity.of_string "1") ~proceeds:(usd "12.50")
+      Position.sell
+        ~from_reserved:false
+        p
+        ~quantity:(Quantity.of_string "1")
+        ~proceeds:(usd "12.50")
       |> Or_error.ok_exn
     in
     p
@@ -40,7 +44,8 @@ let%expect_test "summary in one currency, naming unpriced and foreign holdings" 
     (Amount.to_string s.day_change)
     (Sexp.to_string [%sexp (s.unpriced : Symbol.t list)])
     (Sexp.to_string [%sexp (s.other_currencies : Symbol.t list)]);
-  [%expect {|
+  [%expect
+    {|
     value 103.75 USD, cost 115.00 USD, unrealised 8.75 USD, realised 2.50 USD, day 3.75 USD
     unpriced (NOPX), other (EURO)
     |}]

@@ -24,8 +24,12 @@ module Stable = struct
     [@@deriving compare, equal, sexp_of]
 
     let validate (t : t) =
-      if not (Money.Currency.equal (Amount.currency t.cost_basis) (Amount.currency t.realised))
-      then Or_error.error_s [%message "position amounts in two currencies" ~position:(t : t)]
+      if not
+           (Money.Currency.equal
+              (Amount.currency t.cost_basis)
+              (Amount.currency t.realised))
+      then
+        Or_error.error_s [%message "position amounts in two currencies" ~position:(t : t)]
       else if Quantity.( > ) t.reserved t.quantity
       then Or_error.error_s [%message "more reserved than held" ~position:(t : t)]
       else if Amount.is_negative t.cost_basis
@@ -120,7 +124,9 @@ let sell ?(from_reserved = true) t ~quantity ~proceeds =
   let%bind () = check_currency t proceeds "proceeds" in
   let%bind () =
     if Amount.is_negative proceeds
-    then Or_error.error_s [%message "negative proceeds" ~proceeds:(Amount.to_string proceeds)]
+    then
+      Or_error.error_s
+        [%message "negative proceeds" ~proceeds:(Amount.to_string proceeds)]
     else Ok ()
   in
   let%bind reserved =
@@ -130,7 +136,9 @@ let sell ?(from_reserved = true) t ~quantity ~proceeds =
     then Or_error.error_s [%message "sell more than available" (quantity : Quantity.t)]
     else Ok t.reserved
   in
-  let%bind remaining = Or_error.tag (Quantity.sub t.quantity quantity) ~tag:"sell more than held" in
+  let%bind remaining =
+    Or_error.tag (Quantity.sub t.quantity quantity) ~tag:"sell more than held"
+  in
   let cost_removed =
     if Quantity.is_zero remaining
     then t.cost_basis
@@ -155,7 +163,9 @@ let average_cost t =
   if Quantity.is_zero t.quantity
   then None
   else
-    Price.of_q ~rounding:Half_even (Q.div (Amount.to_q t.cost_basis) (Quantity.to_q t.quantity))
+    Price.of_q
+      ~rounding:Half_even
+      (Q.div (Amount.to_q t.cost_basis) (Quantity.to_q t.quantity))
     |> Result.ok
 ;;
 

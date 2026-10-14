@@ -28,8 +28,7 @@ module Refusal : sig
         }
     | Not_positive (** a zero or negative amount, or a zero quantity *)
     | Price_unavailable of Price_history.Unavailable.t
-    | Too_small_for_one_unit
-    (** the amount does not buy or sell a millionth of a share *)
+    | Too_small_for_one_unit (** the amount does not buy or sell a millionth of a share *)
     | No_holdings of { symbol : Symbol.t } (** nothing held at all *)
     | Holdings_reserved of { symbol : Symbol.t }
     (** shares are held, but pending sells have reserved all of them *)
@@ -59,7 +58,8 @@ end
 
 val plan
   :  ?staleness:Staleness.t
-  -> ?limits:Order_limits.t (** default {!Order_limits.default} in the instrument's currency *)
+  -> ?limits:Order_limits.t
+       (** default {!Order_limits.default} in the instrument's currency *)
   -> instrument:Instrument.t
   -> prices:Price_history.t
   -> today:Date.t

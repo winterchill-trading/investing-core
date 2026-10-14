@@ -86,7 +86,8 @@ let to_fixed_decimal (type a : immediate) (module F : Fixed_decimal.S with type 
 let of_fixed_decimal (type a : immediate) (module F : Fixed_decimal.S with type t = a) v =
   let units = F.to_units v in
   if units mod 100 <> 0
-  then Or_error.error_s [%message "more than six decimal places" ~quantity:(F.to_string v)]
+  then
+    Or_error.error_s [%message "more than six decimal places" ~quantity:(F.to_string v)]
   else of_micro (units / 100)
 ;;
 

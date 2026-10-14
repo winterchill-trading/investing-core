@@ -1,6 +1,6 @@
 (** Retail brokerage domain: instruments, end-of-day prices, fractional market orders,
-    positions with cost basis, and the ledger entries for their cash legs. Pure values
-    and module types only; nothing here persists or talks to a network. *)
+    positions with cost basis, and the ledger entries for their cash legs. Pure values and
+    module types only; nothing here persists or talks to a network. *)
 
 module Booking = Booking
 module Broker = Broker

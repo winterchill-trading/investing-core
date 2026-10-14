@@ -3,8 +3,7 @@
 
     A quantity is never negative. It is stored as an immediate [int] count of millionths
     (micro-shares), so it never allocates and covers up to about 4.6 * 10^12 shares. The
-    text form is the decimal value without trailing zeros: ["1"], ["0.5"],
-    ["12.345678"].
+    text form is the decimal value without trailing zeros: ["1"], ["0.5"], ["12.345678"].
 
     Conversions that can lose a digit name their rounding, because brokerage rounds by
     direction: a cash amount turns into a quantity rounded down (never buy more than was
@@ -62,8 +61,8 @@ val of_fixed_decimal
 (** The exact rational number of shares. *)
 val to_q : t -> Q.t
 
-(** [of_q ~rounding q] rounds [q] shares to a millionth. Fails when the result is
-    negative or out of range. *)
+(** [of_q ~rounding q] rounds [q] shares to a millionth. Fails when the result is negative
+    or out of range. *)
 val of_q : rounding:Money.Rounding.t -> Q.t -> t Or_error.t
 
 (** [add a b] is [a + b]. *)
@@ -74,8 +73,7 @@ val sub : t -> t -> t Or_error.t
 
 module Stable : sig
   module V1 : sig
-    (** Bin_prot is the micro-share count as an [int]; decoding refuses a negative
-        count. *)
+    (** Bin_prot is the micro-share count as an [int]; decoding refuses a negative count. *)
     type nonrec t = t [@@deriving bin_io, sexp, compare, equal, hash]
   end
 end

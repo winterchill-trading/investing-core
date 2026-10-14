@@ -25,8 +25,8 @@ val side : t -> Side.t
 val sizing : t -> string
 
 (** Builds a request from its wire parts: a side, a sizing (["amount"], ["quantity"],
-    ["all"]) and the one value that sizing needs. Fails on an unknown sizing, a missing
-    or extra value, and [all] on a buy. *)
+    ["all"]) and the one value that sizing needs. Fails on an unknown sizing, a missing or
+    extra value, and [all] on a buy. *)
 val of_parts
   :  side:Side.t
   -> sizing:string

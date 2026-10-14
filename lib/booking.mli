@@ -12,15 +12,13 @@
       and the caller rejects the order and releases the hold instead.
     - Buy rejected or cancelled: the hold is released.
     - Sell filled: the proceeds move from the brokerage settlement account to the
-      customer. A sell places no hold; nothing is booked when it is rejected or
-      cancelled.
+      customer. A sell places no hold; nothing is booked when it is rejected or cancelled.
 
     The brokerage settlement account is a clearing account that may go negative: after a
-    buy it shows what is owed to the broker, after a sale what the broker owes. It
-    returns to zero when the broker settles. Every entry's reference is the order id,
-    and its idempotency key is [order:<id>:<leg>] with leg [hold], [settlement],
-    [release] or [proceeds], so booking the same transition twice is caught by the
-    journal. *)
+    buy it shows what is owed to the broker, after a sale what the broker owes. It returns
+    to zero when the broker settles. Every entry's reference is the order id, and its
+    idempotency key is [order:<id>:<leg>] with leg [hold], [settlement], [release] or
+    [proceeds], so booking the same transition twice is caught by the journal. *)
 
 open! Core
 
@@ -41,7 +39,11 @@ val hold_id : Order_id.t -> Ledger.Hold_id.t Or_error.t
 val idempotency_key : Order_id.t -> leg:string -> Ledger.Idempotency_key.t Or_error.t
 
 (** The hold for a pending buy. Fails for a sell or an order with no hold amount. *)
-val buy_placed : Ledger.Balances.t -> Order.t -> at:Time_ns.t -> Ledger.Entry.t list Or_error.t
+val buy_placed
+  :  Ledger.Balances.t
+  -> Order.t
+  -> at:Time_ns.t
+  -> Ledger.Entry.t list Or_error.t
 
 (** The entries for an order that just moved from [before] to [after] (as returned by
     {!Order.apply}): settlement or proceeds on a fill, a release for a buy that was

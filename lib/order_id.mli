@@ -4,7 +4,6 @@
     prefixes and suffixes {!Booking} adds. *)
 
 open! Core
-
 include Ledger.Validated_id.S
 
 (** 100. *)

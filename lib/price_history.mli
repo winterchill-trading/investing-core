@@ -1,5 +1,5 @@
-(** End-of-day closes for many instruments: the reference prices orders are estimated
-    and simulated fills are priced at.
+(** End-of-day closes for many instruments: the reference prices orders are estimated and
+    simulated fills are priced at.
 
     For each symbol and date one close is kept, the {!Close.preferred} one, so loading
     seed data after a feed's closes does not overwrite them. An immutable value. *)
@@ -21,12 +21,12 @@ val of_list : Close.t list -> t
 (** Symbols with at least one close, sorted. *)
 val symbols : t -> Symbol.t list
 
-(** The latest close of [symbol] dated on or before [on_or_before] (default: the latest
-    of all). *)
+(** The latest close of [symbol] dated on or before [on_or_before] (default: the latest of
+    all). *)
 val latest : ?on_or_before:Date.t -> t -> Symbol.t -> Close.t option
 
-(** The latest close strictly before [date]: the previous close to measure a day's
-    change against. *)
+(** The latest close strictly before [date]: the previous close to measure a day's change
+    against. *)
 val before : t -> Symbol.t -> Date.t -> Close.t option
 
 (** The close of [symbol] on exactly [date]. *)

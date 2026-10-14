@@ -29,15 +29,20 @@ let summarize ?staleness currency ~positions ~prices ~today =
     List.partition_tf positions ~f:(fun p ->
       Money.Currency.equal (Position.currency p) currency)
   in
-  let mine = List.sort mine ~compare:(fun (a : Position.t) b -> Symbol.compare a.symbol b.symbol) in
+  let mine =
+    List.sort mine ~compare:(fun (a : Position.t) b -> Symbol.compare a.symbol b.symbol)
+  in
   let holdings =
     List.filter_map mine ~f:(fun (position : Position.t) ->
       if Position.is_flat position
       then None
       else (
-        let quote = Price_history.quote ?staleness prices position.symbol ~today |> Result.ok in
+        let quote =
+          Price_history.quote ?staleness prices position.symbol ~today |> Result.ok
+        in
         let valuation =
-          Option.map quote ~f:(fun q -> Position.value_at position (Price_history.Quote.price q))
+          Option.map quote ~f:(fun q ->
+            Position.value_at position (Price_history.Quote.price q))
         in
         let day_change =
           Option.bind quote ~f:(fun q ->
@@ -51,13 +56,16 @@ let summarize ?staleness currency ~positions ~prices ~today =
   in
   let zero = Amount.zero currency in
   let sum f = List.fold ~init:zero ~f:(fun acc x -> Amount.add_exn acc (f x)) in
-  let priced = List.filter_map holdings ~f:(fun h -> Option.map h.valuation ~f:(fun v -> h, v)) in
+  let priced =
+    List.filter_map holdings ~f:(fun h -> Option.map h.valuation ~f:(fun v -> h, v))
+  in
   { currency
   ; value = sum (fun (_, (v : Position.Valuation.t)) -> v.value) priced
   ; cost_basis = sum (fun (h : Holding.t) -> h.position.cost_basis) holdings
   ; unrealised = sum (fun (_, (v : Position.Valuation.t)) -> v.unrealised) priced
   ; realised = sum (fun (p : Position.t) -> p.realised) mine
-  ; day_change = sum (fun (h : Holding.t) -> Option.value h.day_change ~default:zero) holdings
+  ; day_change =
+      sum (fun (h : Holding.t) -> Option.value h.day_change ~default:zero) holdings
   ; holdings
   ; unpriced =
       List.filter_map holdings ~f:(fun h ->

@@ -21,8 +21,7 @@ val find : t -> Symbol.t -> Instrument.t option
 (** [find], with an error naming the symbol when it is missing. *)
 val find_or_error : t -> Symbol.t -> Instrument.t Or_error.t
 
-(** Instruments matching [query] (see {!Instrument.matches}) and [kind], sorted by
-    symbol. *)
+(** Instruments matching [query] (see {!Instrument.matches}) and [kind], sorted by symbol. *)
 val search : ?query:string -> ?kind:Instrument.Kind.t -> t -> Instrument.t list
 
 (** Every instrument, sorted by symbol. *)

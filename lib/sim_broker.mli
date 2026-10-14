@@ -1,13 +1,12 @@
 (** A simulated broker for demos and tests: it accepts every order, then after a delay
-    fills it whole at the reference price moved by a spread (up for buys, down for
-    sells), or rejects it when there is no reference price or the configured outcome is
-    to reject.
+    fills it whole at the reference price moved by a spread (up for buys, down for sells),
+    or rejects it when there is no reference price or the configured outcome is to reject.
 
     Time comes from an Async [Time_source], so tests drive it with a synthetic clock.
     Nothing happens on its own: due orders are decided by {!emit_due}, which a service
-    calls from a periodic job ({!start} sets one up) and a test calls after advancing
-    its clock. {!fill_now} and {!reject_now} decide one order at once, for demo
-    controls. State lives in memory and is lost with the value. *)
+    calls from a periodic job ({!start} sets one up) and a test calls after advancing its
+    clock. {!fill_now} and {!reject_now} decide one order at once, for demo controls.
+    State lives in memory and is lost with the value. *)
 
 open! Core
 open Async_kernel
@@ -42,21 +41,20 @@ include Broker.S with type t := t
 
 val config : t -> Config.t
 
-(** Applies to orders placed afterwards; orders already waiting keep the delay, spread
-    and outcome they were placed with. *)
+(** Applies to orders placed afterwards; orders already waiting keep the delay, spread and
+    outcome they were placed with. *)
 val set_config : t -> Config.t -> unit
 
 (** Decides every open order whose due time has passed, oldest first. *)
 val emit_due : t -> unit
 
-(** Decides one open order now. Fails for an unknown reference or an order no longer
-    open. *)
+(** Decides one open order now. Fails for an unknown reference or an order no longer open. *)
 val fill_now : t -> broker_ref:string -> unit Or_error.t
 
 val reject_now : t -> broker_ref:string -> reason:string -> unit Or_error.t
 
-(** Calls {!emit_due} every [every] (default one second) on the time source until
-    [stop] is determined. *)
+(** Calls {!emit_due} every [every] (default one second) on the time source until [stop]
+    is determined. *)
 val start : ?every:Time_ns.Span.t -> ?stop:unit Deferred.t -> t -> unit
 
 module Order_state : sig

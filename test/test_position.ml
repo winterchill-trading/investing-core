@@ -52,7 +52,10 @@ let%expect_test "average cost through buys, a partial sale and a full sale" =
 
 let%expect_test "valuation" =
   let p =
-    Position.buy (Position.empty sym Money.Currency.usd) ~quantity:(q "0.5") ~cost:(usd "50.01")
+    Position.buy
+      (Position.empty sym Money.Currency.usd)
+      ~quantity:(q "0.5")
+      ~cost:(usd "50.01")
     |> Or_error.ok_exn
   in
   print_s [%sexp (Position.value_at p (Price.of_string "120.5") : Position.Valuation.t)];
@@ -68,9 +71,13 @@ type step =
 
 let gen_step =
   Quickcheck.Generator.union
-    [ Quickcheck.Generator.map2 (Int.gen_incl 1 5_000_000) (Int.gen_incl 0 100_000)
+    [ Quickcheck.Generator.map2
+        (Int.gen_incl 1 5_000_000)
+        (Int.gen_incl 0 100_000)
         ~f:(fun a b -> Buy (a, b))
-    ; Quickcheck.Generator.map2 (Int.gen_incl 0 1_000) (Int.gen_incl 0 100_000)
+    ; Quickcheck.Generator.map2
+        (Int.gen_incl 0 1_000)
+        (Int.gen_incl 0 100_000)
         ~f:(fun a b -> Sell (a, b))
     ]
 ;;

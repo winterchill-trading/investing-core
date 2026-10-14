@@ -9,7 +9,9 @@ module Config = struct
     }
   [@@deriving sexp, compare, equal]
 
-  let default = { fill_delay = Some (Time_ns.Span.of_sec 4.); spread_bps = 0; outcome = `Fill }
+  let default =
+    { fill_delay = Some (Time_ns.Span.of_sec 4.); spread_bps = 0; outcome = `Fill }
+  ;;
 end
 
 module Order_state = struct

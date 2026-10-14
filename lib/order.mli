@@ -6,15 +6,15 @@
             --cancel---> cancelled  (cash or shares released)
     v}
 
-    While pending, an order also tracks how far it got towards the broker
-    ([submission]): not sent yet, sent with no answer, or acknowledged with the broker's
-    reference. That decides whether it can be cancelled ({!cancellable}): an order not
-    sent yet is cancelled here; one whose submission is in flight cannot be, because the
-    broker may be executing it; an acknowledged one is cancelled once the broker confirms
-    (the caller asks the broker first, then applies [Cancelled]).
+    While pending, an order also tracks how far it got towards the broker ([submission]):
+    not sent yet, sent with no answer, or acknowledged with the broker's reference. That
+    decides whether it can be cancelled ({!cancellable}): an order not sent yet is
+    cancelled here; one whose submission is in flight cannot be, because the broker may be
+    executing it; an acknowledged one is cancelled once the broker confirms (the caller
+    asks the broker first, then applies [Cancelled]).
 
-    {!apply} is the only way to change an order and refuses every transition the
-    diagram does not have, so filled, rejected and cancelled are final. *)
+    {!apply} is the only way to change an order and refuses every transition the diagram
+    does not have, so filled, rejected and cancelled are final. *)
 
 open! Core
 
@@ -107,8 +107,7 @@ module Event : sig
         { price : Price.t
         ; price_date : Date.t option
         ; at : Time_ns.Alternate_sexp.t
-        }
-    (** the whole quantity executed at [price]; the gross is computed by {!apply} *)
+        } (** the whole quantity executed at [price]; the gross is computed by {!apply} *)
     | Rejected of
         { reason : string
         ; at : Time_ns.Alternate_sexp.t
@@ -132,8 +131,8 @@ module Refusal : sig
   val code : t -> string
 end
 
-(** The new order, or why the event does not apply. Re-sending an acknowledgement with
-    the same reference is accepted and changes nothing. *)
+(** The new order, or why the event does not apply. Re-sending an acknowledgement with the
+    same reference is accepted and changes nothing. *)
 val apply : t -> Event.t -> (t, Refusal.t) Result.t
 
 (** [Ok ()] when a cancel may proceed: always for an unsent order, after the broker

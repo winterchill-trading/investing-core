@@ -100,8 +100,7 @@ module Simulated = struct
     else
       (* Going back from the anchor undoes each weekday's step, latest first. *)
       List.fold
-        (List.rev
-           (Date.weekdays_between ~min:(Date.add_days date 1) ~max:t.anchor_date))
+        (List.rev (Date.weekdays_between ~min:(Date.add_days date 1) ~max:t.anchor_date))
         ~init:start
         ~f:(fun units d -> move units ~bps:(step_bps t symbol d) ~forward:false)
   ;;
@@ -122,11 +121,7 @@ module Simulated = struct
     else
       Option.map (Map.find t.start_prices symbol) ~f:(fun start ->
         let units = units_on t symbol start date in
-        { Close.symbol
-        ; date
-        ; close = published t units
-        ; origin = t.origin
-        })
+        { Close.symbol; date; close = published t units; origin = t.origin })
   ;;
 
   let name _ = "simulated"
@@ -139,18 +134,19 @@ module Simulated = struct
     match Map.find t.start_prices symbol with
     | None -> []
     | Some start ->
-      let days = if Date.( > ) from to_ then [] else Date.weekdays_between ~min:from ~max:to_ in
-      let before, after = List.partition_tf days ~f:(fun d -> Date.( < ) d t.anchor_date) in
+      let days =
+        if Date.( > ) from to_ then [] else Date.weekdays_between ~min:from ~max:to_
+      in
+      let before, after =
+        List.partition_tf days ~f:(fun d -> Date.( < ) d t.anchor_date)
+      in
       let forward =
         match after with
         | [] -> []
         | first :: rest ->
-          List.folding_map
-            rest
-            ~init:(units_on t symbol start first)
-            ~f:(fun u d ->
-              let u' = move u ~bps:(step_bps t symbol d) ~forward:true in
-              u', (d, u'))
+          List.folding_map rest ~init:(units_on t symbol start first) ~f:(fun u d ->
+            let u' = move u ~bps:(step_bps t symbol d) ~forward:true in
+            u', (d, u'))
           |> List.cons (first, units_on t symbol start first)
       in
       let backward =
@@ -170,11 +166,7 @@ module Simulated = struct
           acc
       in
       List.map (backward @ forward) ~f:(fun (date, units) ->
-        { Close.symbol
-        ; date
-        ; close = published t units
-        ; origin = t.origin
-        })
+        { Close.symbol; date; close = published t units; origin = t.origin })
   ;;
 
   let closes t ~symbols ~from ~to_ =

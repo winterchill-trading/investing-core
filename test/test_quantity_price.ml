@@ -12,7 +12,17 @@ let show_result to_string r =
 
 let%expect_test "quantity parsing keeps six places and refuses more" =
   List.iter
-    [ "1"; "0.5"; "12.345678"; "12.3456780"; "12.3456781"; "-1"; "1e3"; ""; "."; "007.10" ]
+    [ "1"
+    ; "0.5"
+    ; "12.345678"
+    ; "12.3456780"
+    ; "12.3456781"
+    ; "-1"
+    ; "1e3"
+    ; ""
+    ; "."
+    ; "007.10"
+    ]
     ~f:(fun s -> show_result Quantity.to_string (Quantity.of_string_or_error s));
   [%expect
     {|
@@ -68,8 +78,7 @@ let%expect_test "spread adjustment" =
   let p = Price.of_string "100" in
   List.iter [ 25; -25; 0 ] ~f:(fun bps ->
     show_result Price.to_string (Price.adjust_bps p ~bps ~rounding:Up));
-  [%expect
-    {|
+  [%expect {|
     100.25
     99.75
     100
@@ -79,8 +88,8 @@ let%expect_test "spread adjustment" =
 let%expect_test "shares bought for an amount never cost more than the amount" =
   Quickcheck.test
     (Quickcheck.Generator.tuple2
-       (* a cent or more: ten million dollars at a millionth of a cent is more shares
-          than a quantity can hold *)
+       (* a cent or more: ten million dollars at a millionth of a cent is more shares than
+          a quantity can hold *)
        (Price.quickcheck_generator
         |> Quickcheck.Generator.filter ~f:(fun p -> Price.to_units p >= 1_000_000))
        (* up to ten million dollars, the range orders are limited to *)

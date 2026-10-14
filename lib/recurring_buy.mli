@@ -5,11 +5,11 @@
     same date twice places one order, whatever the retry), and counts failures, pausing
     the plan after too many in a row.
 
-    Dates are counted by index from the start date: the [n]th monthly date is [start]
-    plus [n] months, clamped to the end of a short month, so a plan started on 31 January
-    runs on 28 (or 29) February and on 31 March. When runs were missed (the service was
-    down), only the latest due date runs: buying several times at once later would not
-    be what the customer scheduled. *)
+    Dates are counted by index from the start date: the [n]th monthly date is [start] plus
+    [n] months, clamped to the end of a short month, so a plan started on 31 January runs
+    on 28 (or 29) February and on 31 March. When runs were missed (the service was down),
+    only the latest due date runs: buying several times at once later would not be what
+    the customer scheduled. *)
 
 open! Core
 
@@ -92,8 +92,8 @@ val failed : t -> reason:string -> t
 
 val pause : t -> reason:string -> t
 
-(** Runs again from [today]: dates that passed while paused are never run, a date equal
-    to [today] is. *)
+(** Runs again from [today]: dates that passed while paused are never run, a date equal to
+    [today] is. *)
 val resume : t -> today:Date.t -> t
 
 module Stable : sig

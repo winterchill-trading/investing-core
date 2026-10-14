@@ -201,7 +201,10 @@ let apply t (event : Event.t) =
          | Sell -> Down
        in
        let gross = Price.gross price t.quantity ~currency:(currency t) ~rounding in
-       Ok { t with status = Filled { quantity = t.quantity; price; price_date; gross; at } }
+       Ok
+         { t with
+           status = Filled { quantity = t.quantity; price; price_date; gross; at }
+         }
      | Rejected { reason; at }, _ -> Ok { t with status = Rejected { reason; at } }
      | Cancelled { at }, _ ->
        Result.map (cancellable t) ~f:(fun () -> { t with status = Cancelled { at } }))

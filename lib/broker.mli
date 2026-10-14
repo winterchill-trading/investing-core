@@ -2,11 +2,10 @@
 
     Orders go to the broker as market orders for an exact quantity (the cash-to-shares
     conversion already happened in {!Placement}). Placing is idempotent per
-    [idempotency_key]: placing again with the same key returns the first
-    acknowledgement, and {!S.find} recovers it after a lost answer, so a caller that
-    crashed between sending and recording can resend safely. Outcomes arrive later as
-    {!Event.t}s, each with an [event_id] unique per broker, so a consumer books each one
-    once. *)
+    [idempotency_key]: placing again with the same key returns the first acknowledgement,
+    and {!S.find} recovers it after a lost answer, so a caller that crashed between
+    sending and recording can resend safely. Outcomes arrive later as {!Event.t}s, each
+    with an [event_id] unique per broker, so a consumer books each one once. *)
 
 open! Core
 open Async_kernel

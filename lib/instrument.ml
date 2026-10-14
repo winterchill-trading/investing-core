@@ -57,10 +57,13 @@ module Stable = struct
     let validate (t : Wire.t) =
       let name = String.strip t.name in
       if String.is_empty name
-      then Or_error.error_s [%message "instrument name is empty" ~symbol:(t.symbol : Symbol.t)]
+      then
+        Or_error.error_s
+          [%message "instrument name is empty" ~symbol:(t.symbol : Symbol.t)]
       else if String.length name > max_name_length
       then
-        Or_error.error_s [%message "instrument name too long" ~symbol:(t.symbol : Symbol.t)]
+        Or_error.error_s
+          [%message "instrument name too long" ~symbol:(t.symbol : Symbol.t)]
       else Ok { t with name }
     ;;
 
@@ -90,6 +93,7 @@ let with_status t status = { t with listing = Listing.with_status t.listing stat
 let matches t ~query =
   let query = String.strip query in
   String.is_empty query
-  || List.exists [ Symbol.to_string t.symbol; t.name; t.category ] ~f:(fun field ->
-    String.Caseless.is_substring field ~substring:query)
+  || List.exists
+       [ Symbol.to_string t.symbol; t.name; t.category ]
+       ~f:(fun field -> String.Caseless.is_substring field ~substring:query)
 ;;

@@ -42,8 +42,7 @@ let%expect_test "only the latest missed date runs, once" =
   in
   print_s [%sexp (dues : Date.t option list)];
   print_s [%sexp (Recurring_buy.order_id p ~date:(date "2026-09-15") : Order_id.t)];
-  [%expect
-    {|
+  [%expect {|
     (() (2026-09-01) (2026-09-15) ())
     rb-plan-1-20260915
     |}]
@@ -58,10 +57,16 @@ let%expect_test "three failures in a row pause the plan; resuming skips passed d
   print_s [%sexp (p.status : Recurring_buy.Status.t), (p.consecutive_failures : int)];
   let p = Recurring_buy.failed p ~reason:"no_price" in
   print_s [%sexp (p.status : Recurring_buy.Status.t)];
-  print_s [%sexp (Recurring_buy.due p ~today:(date "2026-09-08") ~last_run:None : Date.t option)];
+  print_s
+    [%sexp
+      (Recurring_buy.due p ~today:(date "2026-09-08") ~last_run:None : Date.t option)];
   let p = Recurring_buy.resume p ~today:(date "2026-09-10") in
-  print_s [%sexp (Recurring_buy.due p ~today:(date "2026-09-10") ~last_run:None : Date.t option)];
-  print_s [%sexp (Recurring_buy.due p ~today:(date "2026-09-15") ~last_run:None : Date.t option)];
+  print_s
+    [%sexp
+      (Recurring_buy.due p ~today:(date "2026-09-10") ~last_run:None : Date.t option)];
+  print_s
+    [%sexp
+      (Recurring_buy.due p ~today:(date "2026-09-15") ~last_run:None : Date.t option)];
   [%expect
     {|
     (Active 2)
@@ -89,5 +94,7 @@ let%expect_test "dates_between agrees with nth for every cadence" =
         List.init 1_500 ~f:(Recurring_buy.nth p)
         |> List.filter ~f:(fun d -> Date.between d ~low:from ~high:until)
       in
-      [%test_result: Date.t list] ~expect:expected (Recurring_buy.dates_between p ~from ~until))
+      [%test_result: Date.t list]
+        ~expect:expected
+        (Recurring_buy.dates_between p ~from ~until))
 ;;

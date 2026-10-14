@@ -22,7 +22,8 @@ let%expect_test "stable bin_prot digests" =
     ; "Recurring_buy", [%bin_digest: Recurring_buy.Stable.V1.t]
     ]
     ~f:(fun (name, digest) -> printf "%-14s %s\n" name digest);
-  [%expect {|
+  [%expect
+    {|
     Symbol         d9a8da25d5656b016fb4dbdc2e4197fb
     Isin           d9a8da25d5656b016fb4dbdc2e4197fb
     Quantity       698cfa4093fe5e51523842d37b92aeac
@@ -40,7 +41,14 @@ let%expect_test "stable bin_prot digests" =
     |}]
 ;;
 
-let round_trip (type a) (module M : Binable.S with type t = a) ~sexp_of ~of_sexp ~equal (v : a) =
+let round_trip
+  (type a)
+  (module M : Binable.S with type t = a)
+  ~sexp_of
+  ~of_sexp
+  ~equal
+  (v : a)
+  =
   let back = Binable.of_string (module M) (Binable.to_string (module M) v) in
   assert (equal back v);
   assert (equal (of_sexp (sexp_of v)) v)
@@ -49,7 +57,11 @@ let round_trip (type a) (module M : Binable.S with type t = a) ~sexp_of ~of_sexp
 let%expect_test "records round trip through bin_prot and sexp" =
   let o = order (Buy_amount (usd "100.00")) in
   let o = apply_exn o (Sent { at = t0 }) in
-  let o = apply_exn o (Filled { price = Price.of_string "41.6"; price_date = Some today; at = at_sec 4 }) in
+  let o =
+    apply_exn
+      o
+      (Filled { price = Price.of_string "41.6"; price_date = Some today; at = at_sec 4 })
+  in
   round_trip
     (module Order.Stable.V1)
     ~sexp_of:Order.Stable.V1.sexp_of_t
@@ -64,7 +76,10 @@ let%expect_test "records round trip through bin_prot and sexp" =
     ~equal:Instrument.equal
     i;
   let p =
-    Position.buy (Position.empty (sym "ACME") Money.Currency.usd) ~quantity:(Quantity.of_string "1.25") ~cost:(usd "50.00")
+    Position.buy
+      (Position.empty (sym "ACME") Money.Currency.usd)
+      ~quantity:(Quantity.of_string "1.25")
+      ~cost:(usd "50.00")
     |> Or_error.ok_exn
   in
   round_trip
@@ -74,7 +89,8 @@ let%expect_test "records round trip through bin_prot and sexp" =
     ~equal:Position.equal
     p;
   print_s [%sexp (o : Order.t)];
-  [%expect {|
+  [%expect
+    {|
     ((id o-1) (account customer:1/usd) (symbol ACME)
      (request (Buy_amount "100.00 USD")) (quantity 2.409638)
      (estimate
@@ -90,14 +106,24 @@ let%expect_test "records round trip through bin_prot and sexp" =
 ;;
 
 let%expect_test "decoding re-checks invariants" =
-  let bad = Sexp.of_string "((symbol ACME)(quantity 1)(reserved 2)(cost_basis \"1.00 USD\")(realised \"0.00 USD\"))" in
-  print_s [%sexp (Or_error.try_with (fun () -> Position.Stable.V1.t_of_sexp bad) : Position.t Or_error.t)];
+  let bad =
+    Sexp.of_string
+      "((symbol ACME)(quantity 1)(reserved 2)(cost_basis \"1.00 USD\")(realised \"0.00 \
+       USD\"))"
+  in
+  print_s
+    [%sexp
+      (Or_error.try_with (fun () -> Position.Stable.V1.t_of_sexp bad)
+       : Position.t Or_error.t)];
   print_s
     [%sexp
       (Or_error.try_with (fun () ->
-         Binable.of_string (module Quantity.Stable.V1) (Binable.to_string (module Int) (-5)))
+         Binable.of_string
+           (module Quantity.Stable.V1)
+           (Binable.to_string (module Int) (-5)))
        : Quantity.t Or_error.t)];
-  [%expect {|
+  [%expect
+    {|
     (Error
      ("more reserved than held"
       (position

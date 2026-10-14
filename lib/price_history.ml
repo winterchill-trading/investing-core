@@ -21,8 +21,7 @@ let latest ?on_or_before t symbol =
   let by_date = dates t symbol in
   match on_or_before with
   | None -> Map.max_elt by_date |> Option.map ~f:snd
-  | Some date ->
-    Map.closest_key by_date `Less_or_equal_to date |> Option.map ~f:snd
+  | Some date -> Map.closest_key by_date `Less_or_equal_to date |> Option.map ~f:snd
 ;;
 
 let before t symbol date =
