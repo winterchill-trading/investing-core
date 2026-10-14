@@ -1,0 +1,17 @@
+(library
+ (name investing_core_test)
+ (package investing-core)
+ (libraries
+  investing-core
+  core
+  async_kernel
+  zarith
+  money
+  ledger
+  fixed-decimal
+  expect_test_helpers_core)
+ (inline_tests
+  (flags
+   (:standard -source-tree-root .)))
+ (preprocess
+  (pps ppx_jane)))

@@ -13,12 +13,12 @@ let of_string_or_error s =
   if len = 0
   then Or_error.error_string "empty symbol"
   else if len > max_length
-  then Or_error.error_s [%message "symbol too long" s (max_length : int)]
+  then Or_error.error_s [%message "symbol too long" ~symbol:s (max_length : int)]
   else if not (Char.is_alphanum s.[0])
-  then Or_error.error_s [%message "symbol must start with a letter or digit" s]
+  then Or_error.error_s [%message "symbol must start with a letter or digit" ~symbol:s]
   else (
     match String.find s ~f:(Fn.non valid_char) with
-    | Some c -> Or_error.error_s [%message "invalid character in symbol" s (c : char)]
+    | Some c -> Or_error.error_s [%message "invalid character in symbol" ~symbol:s (c : char)]
     | None -> Ok s)
 ;;
 
