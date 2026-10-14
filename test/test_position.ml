@@ -153,3 +153,100 @@ let%expect_test "a partial sale keeps the average cost within rounding" =
       assert (Q.leq (Q.abs (Q.sub removed exact)) (Q.of_ints 1 2));
       assert (not (Amount.is_negative after.cost_basis)))
 ;;
+
+let%expect_test "average cost at eight or four decimals" =
+  (* 3 shares for 100.00: 33.333333333... per share. *)
+  let p = Position.empty sym Money.Currency.usd in
+  let p = Position.buy p ~quantity:(q "3") ~cost:(usd "100.00") |> Or_error.ok_exn in
+  let avg ?precision ?rounding () =
+    Option.value_map
+      (Position.average_cost ?precision ?rounding p)
+      ~default:"-"
+      ~f:Price.to_string
+  in
+  printf "default %s\n" (avg ());
+  printf "eight %s\n" (avg ~precision:Position.Cost_precision.eight ());
+  printf "four %s\n" (avg ~precision:Position.Cost_precision.four ());
+  printf "four up %s\n" (avg ~precision:Position.Cost_precision.four ~rounding:Up ());
+  (* 0.00 cost, and 0.01 over a million shares: zero at four decimals. *)
+  let free =
+    Position.buy
+      (Position.empty sym Money.Currency.usd)
+      ~quantity:(q "1")
+      ~cost:(usd "0.00")
+    |> Or_error.ok_exn
+  in
+  let tiny =
+    Position.buy
+      (Position.empty sym Money.Currency.usd)
+      ~quantity:(q "1000000")
+      ~cost:(usd "0.01")
+    |> Or_error.ok_exn
+  in
+  List.iter [ free; tiny ] ~f:(fun p ->
+    List.iter
+      [ Position.Cost_precision.eight; Position.Cost_precision.four ]
+      ~f:(fun precision ->
+        printf
+          "%s "
+          (Option.value_map
+             (Position.average_cost ~precision p)
+             ~default:"-"
+             ~f:Price.to_string));
+    print_endline "");
+  print_s
+    [%sexp
+      (List.map [ -1; 0; 4; 8; 9 ] ~f:Position.Cost_precision.of_decimals
+       : Position.Cost_precision.t Or_error.t list)];
+  [%expect
+    {|
+    default 33.33333333
+    eight 33.33333333
+    four 33.3333
+    four up 33.3334
+    - -
+    0.00000001 -
+    ((Error ("cost precision must be 0 to 8 decimals" (n -1))) (Ok 0) (Ok 4)
+     (Ok 8) (Error ("cost precision must be 0 to 8 decimals" (n 9))))
+    |}]
+;;
+
+let position_gen =
+  let open Quickcheck.Generator.Let_syntax in
+  (* 1 to a million shares (in millionths) and up to 10m: the average always fits a price,
+     and goes down to 10^-8, below a four-decimal tick. *)
+  let%map shares = Int.gen_incl 1_000_000 1_000_000_000_000
+  and cents = Int.gen_incl 1 1_000_000_000 in
+  Position.buy
+    (Position.empty sym Money.Currency.usd)
+    ~quantity:(Quantity.of_micro shares |> Or_error.ok_exn)
+    ~cost:(Amount.of_minor_units_int Money.Currency.usd cents)
+  |> Or_error.ok_exn
+;;
+
+let exact (p : Position.t) = Q.div (Amount.to_q p.cost_basis) (Quantity.to_q p.quantity)
+
+let%test_unit "the default is half-even at eight decimals, as before" =
+  Quickcheck.test position_gen ~f:(fun p ->
+    [%test_result: Price.t option]
+      (Position.average_cost p)
+      ~expect:(Price.of_q ~rounding:Half_even (exact p) |> Result.ok))
+;;
+
+let%test_unit "four decimals: a multiple of 10^-4 within the rounding's bound" =
+  let tick = Q.of_ints 1 10_000 in
+  Quickcheck.test position_gen ~f:(fun p ->
+    let x = exact p in
+    List.iter Money.Rounding.all ~f:(fun rounding ->
+      match Position.average_cost ~precision:Position.Cost_precision.four ~rounding p with
+      | None -> assert (Q.( < ) x tick)
+      | Some avg ->
+        assert (Price.to_units avg mod 10_000 = 0);
+        let a = Price.to_q avg in
+        assert (Q.( < ) (Q.abs (Q.sub a x)) tick);
+        (match rounding with
+         | Down | Toward_zero -> assert (Q.( <= ) a x)
+         | Up | Away_from_zero -> assert (Q.( >= ) a x)
+         | Half_even | Half_up ->
+           assert (Q.( <= ) (Q.abs (Q.sub a x)) (Q.div tick (Q.of_int 2))))))
+;;
