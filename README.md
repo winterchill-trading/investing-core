@@ -147,8 +147,9 @@ Stable `bin_prot` digests are pinned in `test/test_stable.ml`; a change there me
 
 ## Portability
 
-The library uses no OxCaml-only language feature itself beyond layout annotations needed
-to pass `Fixed_decimal.S` modules (`('a : immediate)`). It depends on Jane Street's
+The only OxCaml-specific syntax is layout annotations: `Price.t` and `Quantity.t` are
+declared `immediate`, and `Quantity` takes `Fixed_decimal.S` modules as
+`('a : immediate)`. It depends on Jane Street's
 `v0.18~preview` packages, published in the OxCaml opam repository, and on `money`,
 `ledger` and `fixed-decimal` from this organization.
 
